@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>숫자 야구게임</title>
+  </head>
+  <body>
+    <form id="form">
+      <input type="text" id="input" />
+      <button>확인</button>
+    </form>
+    <div id="logs"></div>
+    <script>
+      const $input = document.querySelector('#input');
+      const $form = document.querySelector('#form');
+      const $logs = document.querySelector('#logs');
+      const numbers = [...Array(9).keys()].map((element) => element + 1); // 1 ~ 9
+      const answer = [];
+      for (let i = 0; i < 4; i++) {
+        const index = Math.floor(Math.random() * numbers.length);
+        answer.push(numbers[index]);
+        numbers.splice(index, 1);
+      }
+      console.log(answer);
+      const tries = [];
+      function checkInput(input) {
+        if (input.length !== 4) {
+          return alert('4자리 숫자를 입력해 주세요.');
+        }
+        if (new Set(input).size !== 4) {
+          return alert('중복되지 않게 입력해 주세요.');
+        }
+        if (tries.includes(input)) {
+          return alert('이미 시도한 값입니다.');
+        }
+        return true;
+      }
+      let outCount = 0;
+      $form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const value = $input.value;
+        function defeated() {
+          $logs.append(
+            `패배! 정답은 ${answer.join('')}`,
+            document.createElement('br')
+          );
+        }
+        $input.value = '';
+        if (!checkInput(value)) {
+          // 입력값 문제 있음
+          return $input.focus();
+        }
+        // 입력값 문제 없음
+        if (answer.join('') === value) {
+          $logs.textContent = '홈런!';
+          return;
+        }
+        if (tries.length >= 9) {
+          defeated();
+          return;
+        }
+        
+        let strike = 0;
+        let ball = 0;
+
+        answer.forEach((element, idx) => {
+          const index = value.indexOf(element);
+          if (index > -1) {
+            if (idx === index) strike++;
+            else ball++;
+          }
+        });
+
+        if (strike === 0 && ball === 0) {
+          outCount++;
+          $logs.append(`${value}: 아웃`, document.createElement('br'));
+        } else {
+          $logs.append(
+            `${value}: ${strike} 스트라이크 ${ball} 볼`,
+            document.createElement('br')
+          );
+        }
+        if (outCount === 3) {
+          defeated();
+          return;
+        }
+        tries.push(value);
+      });
+    </script>
+  </body>
+</html>

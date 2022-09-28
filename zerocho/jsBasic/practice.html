@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+  </head>
+  <body>
+    <form id="form">
+      <input type="text" id="input" />
+      <button>제출</button>
+    </form>
+    <div id="result"></div>
+    <script>
+      const $form = document.querySelector('#form');
+      const $input = document.querySelector('#input');
+      const $result = document.querySelector('#result');
+
+      const numbers = [...Array(9).keys()].map((element) => element + 1);
+      const answer = [];
+      for (let i = 0; i < 4; i++) {
+        const index = Math.floor(Math.random() * numbers.length);
+        answer.push(numbers[index]);
+        numbers.splice(index, 1);
+      }
+      console.log(answer);
+
+      const tries = [];
+      // input 조건 확인 기능
+      function checkInput(input) {
+        if (input.length !== 4) {
+          return alert('숫자 4개를 입력하세요.');
+        }
+        if (new Set(input).size !== 4) {
+          return alert('중복되지 않게 입력하세요.');
+        }
+        if (tries.includes(input)) {
+          return alert('전에 입력했던 숫자입니다.');
+        }
+        return true;
+      }
+
+      let outCount = 0;
+      $form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const input = $input.value;
+        $input.value = '';
+        if (!checkInput(input)) {
+          // 입력 조건 만족 x
+          return $input.focus();
+        }
+        // 입력 조건 만족
+        if (tries.length > 9) {
+          return $result.append(
+            `실패! 정답은 ${answer.join('')}입니다.`,
+            document.createElement('br')
+          );
+        }
+        // strike, ball 세기
+        if (answer.join('') === input) {
+          return ($result.textContent = '홈런!');
+        }
+        let strike = 0;
+        let ball = 0;
+        answer.forEach((element, index) => {
+          const inputIndex = input.indexOf(element);
+          if (inputIndex > -1) {
+            if (inputIndex === index) strike++;
+            else ball++;
+          }
+        });
+        if (outCount === 3) {
+          return $result.append(
+            `실패! 정답은 ${answer.join('')}입니다.`,
+            document.createElement('br')
+          );
+        }
+
+        if (strike === 0 && ball === 0) {
+          outCount++;
+          $result.append(`${input}: 아웃`, document.createElement('br'));
+        } else {
+          $result.append(
+            `${input}: ${strike} 스트라이크 ${ball} 볼`,
+            document.createElement('br')
+          );
+        }
+      });
+      tries.push(input);
+    </script>
+  </body>
+</html>

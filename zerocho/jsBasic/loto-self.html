@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>로또추첨기</title>
+    <style>
+      div {
+        margin: 20px;
+      }
+      .ball {
+        display: inline-block;
+        border: 1px solid #000;
+        width: 40px;
+        height: 40px;
+        border-radius: 20px;
+        margin: 0 10px;
+        text-align: center;
+        line-height: 40px;
+        font-size: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="result">결과:</div>
+    <div id="bonus">보너스:</div>
+    <script>
+      const $result = document.querySelector('#result');
+      const $bonus = document.querySelector('#bonus');
+      const balls = Array(45)
+        .fill()
+        .map((value, index) => index + 1); // 1~45
+
+      const setRandomBalls = () => {
+        const randomBalls = [];
+        while (balls.length > 0) {
+          const randomIndex = Math.floor(Math.random() * balls.length); // 0 ~ 44
+          const number = balls.splice(randomIndex, 1)[0];
+          randomBalls.push(number);
+        }
+        return randomBalls;
+      };
+
+      const selectBalls = (randomBalls) => {
+        const selectedBalls = randomBalls.slice(0, 6).sort((a, b) => a - b);
+        const bonus = randomBalls[6];
+        return { selectedBalls, bonus };
+      };
+
+      const drawBall = (number, $ball) => {
+        $ball.className = 'ball';
+        $ball.textContent = number;
+        $ball.style.color = 'white';
+        if (number < 10) $ball.style.backgroundColor = 'red';
+        else if (number < 20) $ball.style.backgroundColor = 'orange';
+        else if (number < 40) $ball.style.backgroundColor = 'blue';
+        else $ball.style.backgroundColor = 'green';
+      };
+
+      const showBall = (number, $target) => {
+        const $ball = document.createElement('div');
+        drawBall(number, $ball);
+        $target.append($ball);
+      };
+
+      const randomBalls = setRandomBalls();
+      const { selectedBalls, bonus } = selectBalls(randomBalls);
+
+      for (let i = 0; i < selectedBalls.length; i++) {
+        setTimeout(() => {
+          return showBall(selectedBalls[i], $result);
+        }, (i + 1) * 1000);
+      }
+
+      setTimeout(() => {
+        showBall(bonus, $bonus);
+      }, 7000);
+    </script>
+  </body>
+</html>

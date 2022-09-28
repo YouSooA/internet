@@ -1,0 +1,26 @@
+javascript
+- document는 html
+- document.body / document.title / document.head 빼고 나머지 요소들은 getElementById나 querySelector같은 걸로 가지고 와야 함
+- document.getElementbyId(이름): html에서 id로 요소를 가지고 옴
+- document.getElementbyClassName(이름): html에서 class로 요소를 가지고 옴
+- querySelector(): selector의 구체적인 그룹과 일치하는 document안 첫번째 엘리먼트를 반환
+- querySelectorAll(): selector의 그룹과 일치하는 document 모든 엘리먼트를 반환
+  -> getElementbyId가 querySelector보다 더 많이 쓰임
+  -> 참고: https://velog.io/@chloeee/getElementById-%EA%B7%B8%EB%A6%AC%EA%B3%A0-querySelector-%EC%B0%A8%EC%9D%B4%EC%A0%90
+- document.createElement('태그'): 태그 element 생성
+- document.body.appendChild(): body 태그 마지막에 요소 추가
+
+
+event
+- addEventListener(사건, 함수): 사건이 발생하면 함수 실행
+  -> addEventListener안에 있는 함수는 직접 실행하지 x
+  -> 브라우저가 함수를 실행 시켜줄 뿐만 아니라 event에 대한 정보도 담아줌
+- on이 붙어져 있는 property가 event 
+  -> addEventListener에서 사건 인수로 on빼고 쓰면 됨
+- preventDefault(): 브라우저의 기본 동작을 막아준다. 
+
+localStorage
+- localStorage.setItem("키", "값"): localStorage에 키와 값 저장
+- localStorage.getItem("키"): 키에 대응하는 값 반환
+- localStorage.removeItem("키"): 키과 키에 대응하는 값 삭제
+

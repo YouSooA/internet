@@ -1,0 +1,17 @@
+.hello {
+  color: red;
+  cursor: pointer;
+  transition: 0.5s;
+}
+/* hello!를 눌렀을 때 색상 변경 */
+.clicked {
+  color: blue;
+  transition: 0.5s;
+}
+/* submit하면 form 사라지기 */
+.hidden {
+  display: none;
+}
+a {
+  color: black;
+}
