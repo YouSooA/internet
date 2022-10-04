@@ -1,11 +1,112 @@
 <!DOCTYPE html>
 <html lang="ko">
-<head>
-  <meta charset="UTF-8">
-  <title>가위바위보</title>
-  
-</head>
-<body>
-  
-</body>
+  <head>
+    <meta charset="UTF-8" />
+    <title>가위바위보</title>
+    <style>
+      #computer {
+        width: 142px;
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="computer"></div>
+    <div>
+      <button id="scissors" class="btn">가위</button>
+      <button id="rock" class="btn">바위</button>
+      <button id="paper" class="btn">보</button>
+    </div>
+    <div id="score">0</div>
+    <script>
+      const $computer = document.querySelector('#computer');
+      const $score = document.querySelector('#score');
+      const $rock = document.querySelector('#rock');
+      const $scissors = document.querySelector('#scissors');
+      const $paper = document.querySelector('#paper');
+      const IMG_URL = './rsp.png';
+      $computer.style.background = `url(${IMG_URL}) 0 0`;
+      $computer.style.backgroundSize = 'auto 200px';
+
+      const rspX = {
+        scissors: '0',
+        rock: '-220px',
+        paper: '-440px',
+      };
+
+      let computerChoice = 'scissors';
+      const changeComputerHand = () => {
+        if (computerChoice === 'scissors') {
+          computerChoice = 'rock';
+        } else if (computerChoice === 'rock') {
+          computerChoice = 'paper';
+        } else if (computerChoice === 'paper') {
+          computerChoice = 'scissors';
+        }
+        $computer.style.background = `url(${IMG_URL}) ${rspX[computerChoice]} 0`;
+        $computer.style.backgroundSize = 'auto 200px';
+      };
+
+      const scoreTable = {
+        rock: 0,
+        scissors: 1,
+        paper: -1,
+      };
+
+      let intervalId = setInterval(changeComputerHand, 50);
+      // clickButton 5번 호출 -> 인터벌 1번~5번, intervalId = 5번
+      // 그 다음에 버튼을 누르면 5번만 취소
+
+      // 해결방법 1) setTimeout에 clearInterval(intervalId); 넣어서 1초 후 직전에 interval이 있으면 제거
+      // 2) 버튼 누르면 다른 버튼 못누르게 이벤트 제거
+
+      // const clickButton = () => {
+      //   clearInterval(intervalId);
+      //   // 2) 버튼 누르면 다른 버튼 못누르게 이벤트 제거
+      //   $rock.removeEventListener('click', clickButton);
+      //   $scissors.removeEventListener('click', clickButton);
+      //   $paper.removeEventListener('click', clickButton);
+      //   setTimeout(() => {
+      //     // 새로운 타이머 할당 (타이머마다 id가 달라짐)
+      //     intervalId = setInterval(changeComputerHand, 50);
+      //     // 2) 1초 뒤에 버튼 누를 수 있도록 함
+      //     $rock.addEventListener('click', clickButton);
+      //     $scissors.addEventListener('click', clickButton);
+      //     $paper.addEventListener('click', clickButton);
+      //   }, 1000);
+      // };
+
+      // 3)
+      let clickable = true;
+      let score = 0;
+      const clickButton = (event) => {
+        if (clickable) {
+          clearInterval(intervalId);
+          clickable = false;
+          const myChoice = event.target.id;
+          const myScore = scoreTable[myChoice];
+          const computerScore = scoreTable[computerChoice];
+          const diff = myScore - computerScore;
+          let message;
+          if (diff === -1 || diff === 2) {
+            score++;
+            message = '승리';
+          } else if (diff === 0) {
+            message = '무승부';
+          } else if (diff === 1 || diff === -2) {
+            score--;
+            message = '패배';
+          }
+          $score.textContent = `${message} 총: ${score}점`;
+          setTimeout(() => {
+            clickable = true;
+            intervalId = setInterval(changeComputerHand, 50);
+          }, 1000);
+        }
+      };
+      $rock.addEventListener('click', clickButton);
+      $scissors.addEventListener('click', clickButton);
+      $paper.addEventListener('click', clickButton);
+    </script>
+  </body>
 </html>

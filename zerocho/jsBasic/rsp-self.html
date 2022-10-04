@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>가위바위보</title>
+    <style>
+      #computer {
+        width: 142px;
+        height: 200px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="computer"></div>
+    <button id="scissors" class="btn">가위</button>
+    <button id="rock" class="btn">바위</button>
+    <button id="paper" class="btn">보</button>
+    <div id="result"></div>
+    <script>
+      const $computer = document.querySelector('#computer');
+      const $rock = document.querySelector('#rock');
+      const $scissors = document.querySelector('#scissors');
+      const $paper = document.querySelector('#paper');
+      const $result = document.querySelector('#result');
+
+      const IMG_URL = './rsp.png';
+      $computer.style.background = `url(${IMG_URL}) 0 0`;
+      $computer.style.backgroundSize = 'auto 200px';
+
+      const rspX = {
+        rock: '-220px',
+        scissors: '0',
+        paper: '-440px',
+      };
+
+      // 그림 바꾸기
+      let computerChoice = 'scissors';
+      const moveRspX = () => {
+        if (computerChoice === 'scissors') {
+          computerChoice = 'rock';
+        } else if (computerChoice === 'rock') {
+          computerChoice = 'paper';
+        } else if (computerChoice === 'paper') {
+          computerChoice = 'scissors';
+        }
+        $computer.style.background = `url(${IMG_URL}) ${rspX[computerChoice]} 0`;
+        $computer.style.backgroundSize = 'auto 200px';
+      };
+      let intervalId = setInterval(moveRspX, 50);
+
+      // 그림 멈춤
+      let clickable = true;
+      const onClick = (event) => {
+        if (clickable) {
+          clearInterval(intervalId);
+          clickable = false;
+          const myChoice = event.target.id;
+          getResult(myChoice);
+          setTimeout(() => {
+            clickable = true;
+            intervalId = setInterval(moveRspX, 50);
+          }, 1000);
+        }
+      };
+
+      // 점수 계산 및 표시
+      // 나: 가위 바위 보
+      //가위  0    -1   -2
+      //바위  1     0   -1
+      //보    2     1   0
+      const scoreTable = {
+        rock: 0,
+        scissors: 1,
+        paper: -1,
+      };
+
+      // 점수 매기기
+      let winCount = 0;
+      let loseCount = 0;
+      let drawCount = 0;
+      const getResult = (myChoice) => {
+        const myScore = scoreTable[myChoice];
+        const computerScore = scoreTable[computerChoice];
+        const diff = myScore - computerScore;
+        let message;
+        if (diff === -1 || diff === 2) {
+          winCount++;
+          message = '승리';
+        } else if (diff === 0) {
+          drawCount++;
+          message = '무승부';
+        } else if (diff === 1 || diff === -2) {
+          loseCount++;
+          message = '패배';
+        }
+        setWinner(winCount, loseCount, drawCount, message);
+      };
+
+      // winner print
+      const setWinner = (winCount, loseCount, drawCount, message) => {
+        const score = winCount - loseCount;
+        const totalCount = winCount + loseCount + drawCount;
+        $result.append(
+          `${totalCount}차: ${message} / 점수: ${score}점`,
+          document.createElement('br')
+        );
+        result(winCount, loseCount, drawCount, totalCount);
+      };
+
+      // 게임 끝내기
+      const result = (winCount, loseCount, drawCount, totalCount) => {
+        if (winCount === 3) {
+          $result.append('당신이 승자!');
+          return restartGame();
+        }
+        if (loseCount === 3) {
+          $result.append('당신이 패배자!');
+          return restartGame();
+        }
+        if (totalCount === 5) {
+          $result.append('무승부!');
+          return restartGame();
+        }
+      };
+
+      const restartGame = () => {
+        clearInterval(intervalId);
+        $rock.removeEventListener('click', onClick);
+        $scissors.removeEventListener('click', onClick);
+        $paper.removeEventListener('click', onClick);
+        setTimeout(() => {
+          alert('게임을 다시 시작합니다!');
+          window.location.reload();
+        }, 1000);
+      };
+
+      $rock.addEventListener('click', onClick);
+      $scissors.addEventListener('click', onClick);
+      $paper.addEventListener('click', onClick);
+    </script>
+  </body>
+</html>
