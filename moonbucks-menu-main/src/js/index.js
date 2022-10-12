@@ -1,52 +1,3 @@
-// ## 🎯 step2 요구사항 - 상태 관리로 메뉴 관리하기
-
-// Todo localStorage에 데이터 저장 / 읽기
-// - [x] [localStorage]에 데이터를 저장한다.
-//  - [x] 메뉴를 추가할 때
-//  - [x] 메뉴를 수정할 때
-//  - [x] 메뉴를 삭제할 때
-// - [x] localStorage에 있는 데이터를 읽어온다.
-
-// Todo 종류별로 메뉴판 관리
-// - [x] 에스프레소 메뉴판 관리
-// - [x] 프라푸치노 메뉴판 관리
-// - [x] 블렌디드 메뉴판 관리
-// - [x] 티바나 메뉴판 관리
-// - [x] 디저트 메뉴판 관리
-
-// Todo 페이지 접근시 최초 데이터 읽고 렌더링
-// - [x] 페이지를 최초로 로딩할 때 localStorage에 에스프레소 메뉴를 읽어온다.
-// - [x] 에스프레소 메뉴를 페이지에 그려준다.
-
-// Todo 품절 상태 관리
-// - [] 품절 버튼을 추가한다.
-// - [] 품절 버튼을 클릭하면 localStorage에 품절 상태값을 저장한다.
-// - [] 품절 버튼 클릭이벤트에서 가장 가까운 li태그의 class 속성값에 'sold-out'을 추가한다.
-
-// ```js
-// <li class="menu-list-item d-flex items-center py-2">
-//   <span class="w-100 pl-2 menu-name sold-out">${name}</span>
-//   <button
-//     type="button"
-//     class="bg-gray-50 text-gray-500 text-sm mr-1 menu-sold-out-button"
-//   >
-//     품절
-//   </button>
-//   <button
-//     type="button"
-//     class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
-//   >
-//     수정
-//   </button>
-//   <button
-//     type="button"
-//     class="bg-gray-50 text-gray-500 text-sm menu-remove-button"
-//   >
-//     삭제
-//   </button>
-// </li>
-// ```
-
 const $ = (selector) => document.querySelector(selector);
 
 const storage = {
@@ -67,6 +18,7 @@ function App() {
     teavana: [],
     desert: [],
   };
+  // 페이지를 최초로 로딩할 때 localStorage에 에스프레소 메뉴를 읽어온다
   this.currentCategory = 'espresso';
   this.init = () => {
     // 객체에 데이터가 존재하면 localStorage에서 데이터 불러오기
@@ -81,20 +33,28 @@ function App() {
       .map((menuItem, index) => {
         return `
         <li data-menu-id="${index}" class="menu-list-item d-flex items-center py-2">
-          <span class="w-100 pl-2 menu-name">${menuItem.name}</span>
-          <button
-            type="button"
-            class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
-          >
-            수정
-          </button>
-          <button
-            type="button"
-            class="bg-gray-50 text-gray-500 text-sm menu-remove-button"
-          >
-            삭제
-          </button>
-      </li>`;
+          <span class="${
+            menuItem.soldOut ? 'sold-out' : ''
+          } w-100 pl-2 menu-name">${menuItem.name}</span>
+            <button
+              type="button"
+              class="bg-gray-50 text-gray-500 text-sm mr-1 menu-sold-out-button"
+            >
+              품절
+            </button>
+            <button
+              type="button"
+              class="bg-gray-50 text-gray-500 text-sm mr-1 menu-edit-button"
+            >
+              수정
+            </button>
+            <button
+              type="button"
+              class="bg-gray-50 text-gray-500 text-sm menu-remove-button"
+            >
+              삭제
+            </button>
+        </li>`;
       })
       .join('');
     $('#menu-list').innerHTML = template;
@@ -135,16 +95,28 @@ function App() {
       updateMenuCount();
     }
   };
-
+  const soldOutMenuName = (e) => {
+    const menuId = e.target.closest('li').dataset.menuId;
+    this.menu[this.currentCategory][menuId].soldOut =
+      !this.menu[this.currentCategory][menuId].soldOut;
+    storage.setLocalStorage(this.menu);
+    render();
+  };
   $('#menu-form').addEventListener('submit', (e) => {
     e.preventDefault();
   });
   $('#menu-list').addEventListener('click', (e) => {
     if (e.target.classList.contains('menu-edit-button')) {
       updateMenuName(e);
+      return;
     }
     if (e.target.classList.contains('menu-remove-button')) {
       removeMenuName(e);
+      return;
+    }
+    if (e.target.classList.contains('menu-sold-out-button')) {
+      soldOutMenuName(e);
+      return;
     }
   });
   $('#menu-name').addEventListener('keypress', (e) => {
