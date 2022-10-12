@@ -8,15 +8,15 @@
 // - [x] localStorage에 있는 데이터를 읽어온다.
 
 // Todo 종류별로 메뉴판 관리
-// - [] 에스프레소 메뉴판 관리
-// - [] 프라푸치노 메뉴판 관리
-// - [] 블렌디드 메뉴판 관리
-// - [] 티바나 메뉴판 관리
-// - [] 디저트 메뉴판 관리
+// - [x] 에스프레소 메뉴판 관리
+// - [x] 프라푸치노 메뉴판 관리
+// - [x] 블렌디드 메뉴판 관리
+// - [x] 티바나 메뉴판 관리
+// - [x] 디저트 메뉴판 관리
 
 // Todo 페이지 접근시 최초 데이터 읽고 렌더링
-// - [] 페이지를 최초로 로딩할 때 localStorage에 에스프레소 메뉴를 읽어온다.
-// - [] 에스프레소 메뉴를 페이지에 그려준다.
+// - [x] 페이지를 최초로 로딩할 때 localStorage에 에스프레소 메뉴를 읽어온다.
+// - [x] 에스프레소 메뉴를 페이지에 그려준다.
 
 // Todo 품절 상태 관리
 // - [] 품절 버튼을 추가한다.
@@ -60,18 +60,24 @@ const storage = {
 
 function App() {
   // 상태 - 메뉴명
-  this.menu = [];
+  this.menu = {
+    espresso: [],
+    frappuccino: [],
+    blended: [],
+    teavana: [],
+    desert: [],
+  };
+  this.currentCategory = 'espresso';
   this.init = () => {
-    if (storage.getLocalStorage().length >= 1) {
+    // 객체에 데이터가 존재하면 localStorage에서 데이터 불러오기
+    if (storage.getLocalStorage()) {
       this.menu = storage.getLocalStorage();
-      console.log(this.menu);
-      console.log(this.menu.length);
     }
     render();
   };
 
   const render = () => {
-    const template = this.menu
+    const template = this.menu[this.currentCategory]
       .map((menuItem, index) => {
         return `
         <li data-menu-id="${index}" class="menu-list-item d-flex items-center py-2">
@@ -91,49 +97,49 @@ function App() {
       </li>`;
       })
       .join('');
-    $('#espresso-menu-list').innerHTML = template;
+    $('#menu-list').innerHTML = template;
     updateMenuCount();
   };
 
   const addMenu = () => {
     if (
-      $('#espresso-menu-name').value === '' ||
-      $('#espresso-menu-name').value.replace(/\s/g, '') === ''
+      $('#menu-name').value === '' ||
+      $('#menu-name').value.replace(/\s/g, '') === ''
     ) {
       return alert('신메뉴를 입력해주세요.');
     }
-    const espressoMenuName = $('#espresso-menu-name').value;
-    this.menu.push({ name: espressoMenuName });
+    const espressoMenuName = $('#menu-name').value;
+    this.menu[this.currentCategory].push({ name: espressoMenuName });
     storage.setLocalStorage(this.menu);
     render();
-    $('#espresso-menu-name').value = '';
+    $('#menu-name').value = '';
   };
   const updateMenuCount = () => {
-    const menuCount = $('#espresso-menu-list').querySelectorAll('li').length;
+    const menuCount = $('#menu-list').querySelectorAll('li').length;
     $('.menu-count').innerText = `총 ${menuCount}개`;
   };
   const updateMenuName = (e) => {
     const menuId = e.target.closest('li').dataset.menuId;
     const $menuName = e.target.closest('li').querySelector('.menu-name');
     const updatedMenuName = prompt('메뉴명을 수정하세요', $menuName.innerText);
-    this.menu[menuId].name = updatedMenuName;
+    this.menu[this.currentCategory][menuId].name = updatedMenuName;
     storage.setLocalStorage(this.menu);
     $menuName.innerText = updatedMenuName;
   };
   const removeMenuName = (e) => {
     if (confirm('정말로 삭제할 건가요?')) {
       const menuId = e.target.closest('li').dataset.menuId;
-      this.menu.splice(menuId, 1);
+      this.menu[this.currentCategory].splice(menuId, 1);
       storage.setLocalStorage(this.menu);
       e.target.closest('li').remove();
       updateMenuCount();
     }
   };
 
-  $('#espresso-menu-form').addEventListener('submit', (e) => {
+  $('#menu-form').addEventListener('submit', (e) => {
     e.preventDefault();
   });
-  $('#espresso-menu-list').addEventListener('click', (e) => {
+  $('#menu-list').addEventListener('click', (e) => {
     if (e.target.classList.contains('menu-edit-button')) {
       updateMenuName(e);
     }
@@ -141,13 +147,24 @@ function App() {
       removeMenuName(e);
     }
   });
-  $('#espresso-menu-name').addEventListener('keypress', (e) => {
+  $('#menu-name').addEventListener('keypress', (e) => {
     if (e.key !== 'Enter') {
       return;
     }
     addMenu();
   });
-  $('#espresso-menu-submit-button').addEventListener('click', addMenu);
+  $('#menu-submit-button').addEventListener('click', addMenu);
+
+  $('nav').addEventListener('click', (e) => {
+    const isCategoryButton = e.target.classList.contains('cafe-category-name');
+    if (isCategoryButton) {
+      const categoryName = e.target.dataset.categoryName;
+      this.currentCategory = categoryName;
+      $('#category-title').innerText = `${e.target.innerText} 메뉴 관리`;
+      console.log(e.target);
+      render();
+    }
+  });
 }
 const app = new App();
 app.init();
