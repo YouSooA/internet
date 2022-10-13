@@ -1,6 +1,23 @@
 import { $ } from './utils/dom.js';
 import storage from './storage/index.js';
 
+// Todo 서버 요청 부분
+// - [] 웹 서버를 띄운다.
+// - [] 서버에 새로운 메뉴명을 추가할 수 있도록 요청한다.
+// - [] 서버에 카테고리별 메뉴리스트 불러올 수 있도록 요청한다.
+// - [] 서버에 메뉴명을 수정할 수 있도록 요청한다.
+// - [] 서버에 메뉴의 품절상태를 토글할 수 있도록 요청한다.
+// - [] 서버에 메뉴가 삭제될 수 있도록 요청한다. 
+
+// 리펙터링 부분
+//   - [ ] localStorage에 저장하는 로직은 지운다.
+//   - [ ] fetch 비동기 api를 사용하는 부분을 async await을 사용하여 구현한다.
+
+// Todo 사용자 경험
+//   - [ ] API 통신이 실패하는 경우에 대해 사용자가 알 수 있게 [alert](https://developer.mozilla.org/ko/docs/Web/API/Window/alert)으로 예외처리를 진행한다.
+// - [ ] 중복되는 메뉴는 추가할 수 없다.
+
+
 function App() {
   // 상태 - 메뉴명
   this.menu = {
